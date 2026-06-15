@@ -11,28 +11,20 @@ return new class extends Migration
         Schema::create('recipe_ingredients', function (Blueprint $table) {
 
             $table->id();
-
             $table->foreignId('recipe_id')
                   ->constrained('recipes')
                   ->cascadeOnDelete();
-
             $table->string('ingredient_name',200);
-
             $table->decimal('quantity',8,2)
                   ->nullable();
-
             $table->string('unit',30)
                   ->nullable();
-
             $table->string('preparation_note',100)
                   ->nullable();
-
             $table->boolean('is_optional')
                   ->default(false);
-
             $table->integer('sort_order')
                   ->default(0);
-
             $table->timestamps();
         });
     }
