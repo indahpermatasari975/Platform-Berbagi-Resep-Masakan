@@ -25,7 +25,6 @@ return new class extends Migration
                   ->default(false);
             $table->integer('sort_order')
                   ->default(0);
-            $table->timestamps();
         });
     }
 
