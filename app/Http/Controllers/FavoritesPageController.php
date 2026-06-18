@@ -3,37 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class FavoritesPageController extends Controller
 {
     public function index()
     {
-        $userId = Auth::id();
+        $userId = $this->currentUserId();
 
-        if ($userId) {
-            // If authenticated, show DB favorites
-            $favoriteRecipes = Recipe::query()
-                ->whereHas('favorites', function ($q) use ($userId) {
-                    $q->where('user_id', $userId);
-                })
-                ->with('ingredients')
-                ->orderByDesc('updated_at')
-                ->paginate(8);
-        } else {
-            // If not authenticated, show session favorites
-            $sessionFavorites = session('favorites', []);
-
-            $favoriteRecipes = Recipe::query()
-                ->whereIn('id', $sessionFavorites)
-                ->with('ingredients')
-                ->orderByDesc('updated_at')
-                ->paginate(8);
-        }
+        $favoriteRecipes = Recipe::query()
+            ->whereHas('favorites', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->with('ingredients')
+            ->orderByDesc('updated_at')
+            ->paginate(8);
 
         return view('favorites.index', [
             'recipes' => $favoriteRecipes,
         ]);
     }
-}
 
+    private function currentUserId(): int
+    {
+        if (Auth::id()) {
+            return Auth::id();
+        }
+
+        return User::firstOrCreate(
+            ['email' => 'demo@resepkita.test'],
+            [
+                'name' => 'Pengguna Demo',
+                'password' => Hash::make('password'),
+            ]
+        )->id;
+    }
+}

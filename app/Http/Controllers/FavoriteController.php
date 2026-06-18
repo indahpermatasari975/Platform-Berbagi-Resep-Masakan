@@ -4,52 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Models\Favorite;
 use App\Models\Recipe;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
 
 class FavoriteController extends Controller
 {
     public function store(Recipe $recipe)
     {
-        $userId = Auth::id();
+        Favorite::firstOrCreate([
+            'user_id' => $this->currentUserId(),
+            'recipe_id' => $recipe->id,
+        ]);
 
-        // If authenticated, save to DB
-        if ($userId) {
-            Favorite::firstOrCreate([
-                'user_id' => $userId,
-                'recipe_id' => $recipe->id,
-            ]);
-        } else {
-            // If not authenticated, save to session
-            $sessionFavorites = Session::get('favorites', []);
-            if (!in_array($recipe->id, $sessionFavorites)) {
-                $sessionFavorites[] = $recipe->id;
-                Session::put('favorites', $sessionFavorites);
-            }
-        }
-
-        return back();
+        return back()->with('success', 'Resep berhasil disimpan ke favorit.');
     }
 
     public function destroy(Recipe $recipe)
     {
-        $userId = Auth::id();
+        Favorite::where('user_id', $this->currentUserId())
+            ->where('recipe_id', $recipe->id)
+            ->delete();
 
-        // If authenticated, delete from DB
-        if ($userId) {
-            Favorite::where('user_id', $userId)
-                ->where('recipe_id', $recipe->id)
-                ->delete();
-        } else {
-            // If not authenticated, delete from session
-            $sessionFavorites = Session::get('favorites', []);
-            $key = array_search($recipe->id, $sessionFavorites);
-            if ($key !== false) {
-                unset($sessionFavorites[$key]);
-                Session::put('favorites', array_values($sessionFavorites));
-            }
+        return back()->with('success', 'Resep dihapus dari favorit.');
+    }
+
+    private function currentUserId(): int
+    {
+        if (Auth::id()) {
+            return Auth::id();
         }
 
-        return back();
+        return User::firstOrCreate(
+            ['email' => 'demo@resepkita.test'],
+            [
+                'name' => 'Pengguna Demo',
+                'password' => Hash::make('password'),
+            ]
+        )->id;
     }
 }
