@@ -1,145 +1,97 @@
 <!DOCTYPE html>
-
 <html lang="id">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', 'ResepKita')</title>
 
-```
-<title>ResepKita</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-```
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-
 <body class="bg-light">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold text-warning fs-3" href="{{ route('dashboard') }}">
+                <i class="bi bi-egg-fried"></i>
+                ResepKita
+            </a>
 
-```
-<!-- TOPBAR -->
-<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
-    <div class="container-fluid px-4">
 
-        <a class="navbar-brand fw-bold text-warning fs-3"
-            href="{{ route('dashboard') }}">
-            <i class="bi bi-egg-fried"></i>
-            ResepKita
-        </a>
 
-        <ul class="navbar-nav me-4">
-            <li class="nav-item">
-                <a class="nav-link fw-semibold active" href="#">
-                    Beranda
+                <form class="d-flex flex-grow-1 mx-lg-4 my-3 my-lg-0" method="GET" action="{{ route('recipes.index') }}">
+                    <input class="form-control rounded-pill" type="search" name="q" value="{{ request('q') }}" placeholder="Cari resep, bahan, kategori...">
+                </form>
+
+                <a href="{{ route('recipes.create') }}" class="btn btn-warning text-white fw-semibold">
+                    <i class="bi bi-plus-lg"></i>
+                    Tambah Resep
                 </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('recipes.index') }}">
-                    Resep
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    Kategori
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link"
-                    href="{{ route('meal-planner.index') }}">
-                    Meal Planner
-                </a>
-            </li>
-        </ul>
-
-        <form class="d-flex flex-grow-1 mx-4">
-            <input
-                class="form-control rounded-pill"
-                type="search"
-                placeholder="Cari resep, bahan, kategori...">
-        </form>
-
-        <a href="{{ route('recipes.create') }}"
-            class="btn btn-warning text-white fw-semibold me-3">
-            <i class="bi bi-plus-lg"></i>
-            Tambah Resep
-        </a>
-        
-    </div>
-</nav>
-
-<div class="container-fluid">
-
-    <div class="row">
-
-        <!-- SIDEBAR -->
-        <div class="col-lg-2 bg-white border-end min-vh-100">
-
-            <div class="py-4">
-
-                <a class="sidebar-link active d-block"
-                    href="{{ route('dashboard') }}">
-                    <i class="bi bi-house-door"></i>
-                    Beranda
-                </a>
-
-                <a class="sidebar-link d-block"
-                    href="{{ route('recipes.index') }}">
-                    <i class="bi bi-journal-richtext"></i>
-                    Resep Saya
-                </a>
-
-                <a class="sidebar-link d-block"
-                    href="{{ route('favorites.index') }}">
-                    <i class="bi bi-heart"></i>
-                    Favorit
-                </a>
-
-                <a class="sidebar-link d-block"
-                    href="{{ route('meal-planner.index') }}">
-                    <i class="bi bi-calendar3"></i>
-                    Meal Planner
-                </a>
-
-                <a class="sidebar-link d-block"
-                    href="{{ route('substitutions.index') }}">
-                    <i class="bi bi-arrow-repeat"></i>
-                    Substitusi Bahan
-                </a>
-
-                <a class="sidebar-link d-block">
-                    <i class="bi bi-play-circle"></i>
-                    Video Resep
-                </a>
-
             </div>
-
         </div>
+    </nav>
 
-        <!-- MAIN CONTENT -->
-        <div class="col-lg-10">
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-xl-2 col-lg-3 bg-white border-end min-vh-100 sidebar">
+                <div class="py-4">
+                    <a class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                        <i class="bi bi-house-door"></i>
+                        Beranda
+                    </a>
+                    <a class="sidebar-link {{ request()->routeIs('recipes.*') ? 'active' : '' }}" href="{{ route('recipes.index') }}">
+                        <i class="bi bi-journal-richtext"></i>
+                        Resep Saya
+                    </a>
+                    <a class="sidebar-link {{ request()->routeIs('favorites.*') ? 'active' : '' }}" href="{{ route('favorites.index') }}">
+                        <i class="bi bi-heart"></i>
+                        Favorit
+                    </a>
+                    <a class="sidebar-link {{ request()->routeIs('meal-planner.*') ? 'active' : '' }}" href="{{ route('meal-planner.index') }}">
+                        <i class="bi bi-calendar3"></i>
+                        Meal Planner
+                    </a>
+                    <a class="sidebar-link {{ request()->routeIs('substitutions.*') ? 'active' : '' }}" href="{{ route('substitutions.index') }}">
+                        <i class="bi bi-arrow-repeat"></i>
+                        Substitusi Bahan
+                    </a>
+                </div>
+            </aside>
 
-            <div class="p-4">
+            <main class="col-xl-10 col-lg-9">
+                <div class="p-4">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
-                @yield('content')
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
-            </div>
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <div class="fw-semibold mb-1">Periksa kembali input berikut:</div>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
+                    @yield('content')
+                </div>
+            </main>
         </div>
-
     </div>
 
-</div>
-```
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>
