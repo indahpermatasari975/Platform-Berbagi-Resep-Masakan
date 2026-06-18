@@ -1,233 +1,122 @@
 @extends('layouts.app')
 
+@section('title', 'Tambah Resep - ResepKita')
+
 @section('content')
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <h2 class="mb-3">Tambah Resep</h2>
-
-            <form action="{{ route('recipes.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">Judul Resep</label>
-                            <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Deskripsi</label>
-                            <textarea name="description" class="form-control" required>{{ old('description') }}</textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Kategori</label>
-                            <input type="text" name="category" class="form-control" value="{{ old('category') }}" required>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Porsi</label>
-                                    <input type="number" name="servings" min="1" class="form-control" value="{{ old('servings') }}" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Waktu Persiapan (menit)</label>
-                                    <input type="number" name="prep_time" min="0" class="form-control" value="{{ old('prep_time') }}" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Waktu Memasak (menit)</label>
-                                    <input type="number" name="cook_time" min="0" class="form-control" value="{{ old('cook_time') }}" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tingkat Kesulitan</label>
-                            <select name="difficulty" class="form-control" required>
-                                <option value="Mudah" {{ old('difficulty') == 'Mudah' ? 'selected' : '' }}>Mudah</option>
-                                <option value="Sedang" {{ old('difficulty') == 'Sedang' ? 'selected' : '' }}>Sedang</option>
-                                <option value="Sulit" {{ old('difficulty') == 'Sulit' ? 'selected' : '' }}>Sulit</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Penulis</label>
-                            <input type="text" name="author_name" class="form-control" value="{{ old('author_name') }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Link Gambar (opsional)</label>
-                            <input type="url" name="image" class="form-control" value="{{ old('image') }}" placeholder="https://images.unsplash.com/...">
-                            <div class="form-text">Atau unggah file gambar di bawah</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Unggah Gambar (opsional)</label>
-                            <input type="file" name="image_file" class="form-control">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-                            <h4 class="mb-0">Bahan Resep</h4>
-                            <button type="button" class="btn btn-sm btn-outline-primary" id="addIngredientBtn">+ Tambah Baris</button>
-                        </div>
-
-                        <div id="ingredientsContainer">
-                            <div class="ingredient-row border rounded-3 p-3 mb-3">
-                                <div class="row g-3 align-items-end">
-                                    <div class="col-md-2">
-                                        <label class="form-label small">Urutan</label>
-                                        <input type="number" name="recipe_ingredients[0][sort_order]" class="form-control" value="0">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label small">Nama Bahan</label>
-                                        <input type="text" name="recipe_ingredients[0][ingredient_name]" class="form-control" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label small">Jumlah</label>
-                                        <input type="number" step="0.01" name="recipe_ingredients[0][quantity]" class="form-control">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label small">Satuan</label>
-                                        <input type="text" name="recipe_ingredients[0][unit]" class="form-control" placeholder="gram / ml / sdm">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-sm btn-outline-danger removeIngredientBtn w-100">Hapus</button>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <label class="form-label small">Catatan (opsional)</label>
-                                        <input type="text" name="recipe_ingredients[0][preparation_note]" class="form-control" placeholder="contoh: iris tipis / haluskan">
-                                    </div>
-
-                                    <div class="col-12 form-check">
-                                        <input type="hidden" name="recipe_ingredients[0][is_optional]" value="0">
-                                        <input type="checkbox" class="form-check-input" name="recipe_ingredients[0][is_optional]" value="1" id="optional0">
-                                        <label class="form-check-label" for="optional0">Opsional</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <button class="btn btn-success">Simpan</button>
-
-            </form>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h2 class="fw-bold mb-1">Tambah Resep</h2>
+                <p class="text-muted mb-0">Lengkapi informasi resep, bahan, gambar, dan video jika ada.</p>
+            </div>
+            <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary">Kembali</a>
         </div>
 
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
-                <div class="card-body">
-                    <h5 class="mb-3">Tips</h5>
-                    <ul class="text-muted small mb-0">
-                        <li>Isi minimal 1 bahan.</li>
-                        <li>Urutan akan menentukan tampilan bahan.</li>
-                        <li>Quantity + unit opsional, tapi disarankan.</li>
-                    </ul>
+        <form action="{{ route('recipes.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <div class="form-section p-4 mb-4">
+                <h4 class="fw-bold mb-3">Informasi Resep</h4>
+
+                <div class="mb-3">
+                    <label class="form-label">Judul Resep</label>
+                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea name="description" rows="4" class="form-control" placeholder="Ceritakan singkat tentang resep ini." required>{{ old('description') }}</textarea>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Kategori</label>
+                        <input type="text" name="category" class="form-control" value="{{ old('category') }}" placeholder="Makanan Indonesia" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Penulis</label>
+                        <input type="text" name="author_name" class="form-control" value="{{ old('author_name') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Porsi</label>
+                        <input type="number" name="servings" min="1" class="form-control" value="{{ old('servings', 1) }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Persiapan (menit)</label>
+                        <input type="number" name="prep_time" min="1" class="form-control" value="{{ old('prep_time', 10) }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Memasak (menit)</label>
+                        <input type="number" name="cook_time" min="1" class="form-control" value="{{ old('cook_time', 20) }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tingkat Kesulitan</label>
+                        <select name="difficulty" class="form-select" required>
+                            @foreach (['Mudah', 'Sedang', 'Sulit'] as $level)
+                                <option value="{{ $level }}" @selected(old('difficulty') === $level)>{{ $level }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Video YouTube (opsional)</label>
+                        <input type="url" name="video_url" class="form-control" value="{{ old('video_url') }}" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Link Gambar (opsional)</label>
+                        <input type="text" name="image" class="form-control" value="{{ old('image') }}" placeholder="Tempel alamat gambar di sini">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Upload Gambar (opsional)</label>
+                        <input type="file" name="image_file" class="form-control" accept="image/*">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section p-4 mb-4">
+                <h4 class="fw-bold mb-3">Bahan Resep</h4>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Bahan Utama</label>
+                    <div class="form-text mb-2">Tulis satu bahan per baris. Contoh: 500 ml santan atau 2 batang serai, memarkan.</div>
+                    <textarea name="main_ingredients_text" rows="6" class="form-control" placeholder="1 ekor ayam, potong 8 bagian&#10;500 ml santan&#10;2 batang serai, memarkan&#10;3 lembar daun salam">{{ old('main_ingredients_text') }}</textarea>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label fw-semibold">Bumbu Halus</label>
+                    <div class="form-text mb-2">Isi bumbu yang perlu diulek atau diblender.</div>
+                    <textarea name="ground_spices_text" rows="6" class="form-control" placeholder="8 siung bawang merah&#10;4 siung bawang putih&#10;5 buah cabai merah&#10;3 butir kemiri">{{ old('ground_spices_text') }}</textarea>
+                </div>
+            </div>
+
+            <div class="form-section p-4 mb-4">
+                <h4 class="fw-bold mb-3">Langkah Memasak</h4>
+                <div class="form-text mb-2">Tulis satu langkah per baris agar tersimpan berurutan di database.</div>
+                <textarea name="steps_text" rows="7" class="form-control" placeholder="Tumis bumbu halus sampai harum&#10;Masukkan ayam, aduk sampai berubah warna&#10;Tuang santan lalu masak sampai matang" required>{{ old('steps_text') }}</textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-success fw-semibold">
+                    <i class="bi bi-save"></i>
+                    Simpan Resep
+                </button>
+                <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary">Batal</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 6rem;">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Panduan Singkat</h5>
+                <ul class="text-muted small mb-0">
+                    <li>Tulis bahan satu per baris agar mudah dibaca di halaman detail.</li>
+                    <li>Tulis langkah memasak satu per baris agar urutannya tersimpan rapi.</li>
+                    <li>Gunakan link gambar atau upload file, salah satu saja sudah cukup.</li>
+                    <li>Video YouTube otomatis diubah menjadi tampilan embed di halaman detail.</li>
+                </ul>
             </div>
         </div>
     </div>
-
-    <script>
-        (function () {
-            const container = document.getElementById('ingredientsContainer');
-            const addBtn = document.getElementById('addIngredientBtn');
-
-            function reindex() {
-                const rows = container.querySelectorAll('.ingredient-row');
-                rows.forEach((row, idx) => {
-                    row.querySelectorAll('input, select, textarea').forEach(el => {
-                        if (!el.name) return;
-                        el.name = el.name.replace(/recipe_ingredients\[\d+\]/, `recipe_ingredients[${idx}]`);
-                        // update checkbox id if exists
-                        if (el.id && el.id.startsWith('optional')) {
-                            el.id = `optional${idx}`;
-                            const label = row.querySelector(`label[for="optional${idx}"]`);
-                        }
-                    });
-
-                    // update hidden+checkbox optional properly
-                    const hidden = row.querySelector('input[type="hidden"][name*="[is_optional]"]');
-                    const checkbox = row.querySelector('input[type="checkbox"][name*="[is_optional]"]');
-                    const label = row.querySelector('.form-check-label');
-                    if (hidden && checkbox) {
-                        hidden.name = `recipe_ingredients[${idx}][is_optional]`;
-                        checkbox.name = `recipe_ingredients[${idx}][is_optional]`;
-                        checkbox.id = `optional${idx}`;
-                        if (label) label.setAttribute('for', `optional${idx}`);
-                    }
-                });
-            }
-
-            function bindRemoveButtons() {
-                container.querySelectorAll('.removeIngredientBtn').forEach(btn => {
-                    btn.onclick = () => {
-                        const row = btn.closest('.ingredient-row');
-                        if (!row) return;
-                        row.remove();
-                        reindex();
-                    };
-                });
-            }
-
-            addBtn.addEventListener('click', () => {
-                const idx = container.querySelectorAll('.ingredient-row').length;
-
-                const wrapper = document.createElement('div');
-                wrapper.className = 'ingredient-row border rounded-3 p-3 mb-3';
-
-                wrapper.innerHTML = `
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-2">
-                            <label class="form-label small">Urutan</label>
-                            <input type="number" name="recipe_ingredients[${idx}][sort_order]" class="form-control" value="${idx}">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small">Nama Bahan</label>
-                            <input type="text" name="recipe_ingredients[${idx}][ingredient_name]" class="form-control" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label small">Jumlah</label>
-                            <input type="number" step="0.01" name="recipe_ingredients[${idx}][quantity]" class="form-control">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label small">Satuan</label>
-                            <input type="text" name="recipe_ingredients[${idx}][unit]" class="form-control" placeholder="gram / ml / sdm">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-sm btn-outline-danger removeIngredientBtn w-100">Hapus</button>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label small">Catatan (opsional)</label>
-                            <input type="text" name="recipe_ingredients[${idx}][preparation_note]" class="form-control" placeholder="contoh: iris tipis / haluskan">
-                        </div>
-
-                        <div class="col-12 form-check">
-                            <input type="hidden" name="recipe_ingredients[${idx}][is_optional]" value="0">
-                            <input type="checkbox" class="form-check-input" name="recipe_ingredients[${idx}][is_optional]" value="1" id="optional${idx}">
-                            <label class="form-check-label" for="optional${idx}">Opsional</label>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(wrapper);
-                bindRemoveButtons();
-            });
-
-            bindRemoveButtons();
-        })();
-    </script>
+</div>
 @endsection
-
