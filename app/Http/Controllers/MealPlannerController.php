@@ -3,43 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\MealPlanner;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class MealPlannerController extends Controller
 {
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $data = $request->validate([
-            'recipe_id' => 'required|exists:recipes,id',
+            'recipe_id' => 'required|exists:recipes,id,status,approved',
             'meal_date' => 'required|date',
             'meal_type' => 'required|in:Sarapan,Makan Siang,Makan Malam',
         ]);
 
         MealPlanner::create([
-            'user_id' => $this->currentUserId(),
+            'user_id' => Auth::id(),
             'recipe_id' => $data['recipe_id'],
             'meal_date' => $data['meal_date'],
             'meal_type' => $data['meal_type'],
         ]);
 
         return back()->with('success', 'Menu berhasil ditambahkan ke meal planner.');
-    }
-
-    private function currentUserId(): int
-    {
-        if (Auth::id()) {
-            return Auth::id();
-        }
-
-        return User::firstOrCreate(
-            ['email' => 'demo@resepkita.test'],
-            [
-                'name' => 'Pengguna Demo',
-                'password' => Hash::make('password'),
-            ]
-        )->id;
     }
 }

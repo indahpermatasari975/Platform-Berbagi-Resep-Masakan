@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class Recipe extends Model
@@ -28,7 +27,9 @@ class Recipe extends Model
         'image',
         'video_url',
         'rating',
-        'total_ratings'
+        'total_ratings',
+        'status',
+        'user_id',
     ];
 
     /*
@@ -38,6 +39,11 @@ class Recipe extends Model
     */
 
     // Bahan-bahan resep
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function ingredients()
     {
         return $this->hasMany(
@@ -186,7 +192,11 @@ class Recipe extends Model
 
     public function isInFavorites()
     {
-        return $this->isFavoritedBy($this->currentUserId());
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return $this->isFavoritedBy(Auth::id());
     }
 
     private function ingredientsText(bool $groundSpices): string
@@ -231,18 +241,4 @@ class Recipe extends Model
             : rtrim(rtrim(number_format($number, 2, '.', ''), '0'), '.');
     }
 
-    private function currentUserId(): int
-    {
-        if (Auth::id()) {
-            return Auth::id();
-        }
-
-        return User::firstOrCreate(
-            ['email' => 'demo@resepkita.test'],
-            [
-                'name' => 'Pengguna Demo',
-                'password' => Hash::make('password'),
-            ]
-        )->id;
-    }
 }

@@ -7,6 +7,8 @@
     $avg = (float) ($recipe->rating ?? 0);
     $count = (int) ($recipe->total_ratings ?? 0);
     $isFavorited = $recipe->isInFavorites();
+    $canManageRecipe = auth()->check()
+        && (auth()->user()->role === 'admin' || (int) $recipe->user_id === (int) auth()->id());
 @endphp
 
 <div class="row g-4">
@@ -136,72 +138,83 @@
                 <h5 class="fw-bold mb-3">Aksi Resep</h5>
 
                 <div class="d-grid gap-2 mb-3">
-                    @if ($isFavorited)
-                        <form action="{{ route('recipes.favorite.destroy', $recipe) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger w-100">
-                                <i class="bi bi-heart-fill"></i>
-                                Hapus Favorit
-                            </button>
-                        </form>
+                    @guest
+                        <a href="{{ route('login') }}" class="btn btn-warning fw-semibold">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Login untuk menggunakan fitur
+                        </a>
                     @else
-                        <form action="{{ route('recipes.favorite', $recipe) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-outline-danger w-100">
-                                <i class="bi bi-heart"></i>
-                                Simpan Favorit
-                            </button>
-                        </form>
-                    @endif
+                        @if ($isFavorited)
+                            <form action="{{ route('recipes.favorite.destroy', $recipe) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger w-100">
+                                    <i class="bi bi-heart-fill"></i>
+                                    Hapus Favorit
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('recipes.favorite', $recipe) }}" method="POST">
+                                @csrf
+                                <button class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-heart"></i>
+                                    Simpan Favorit
+                                </button>
+                            </form>
+                        @endif
 
-                    <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-warning fw-semibold">
-                        <i class="bi bi-pencil-square"></i>
-                        Edit Resep
-                    </a>
+                        @if ($canManageRecipe)
+                            <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-warning fw-semibold">
+                                <i class="bi bi-pencil-square"></i>
+                                Edit Resep
+                            </a>
 
-                    <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" onsubmit="return confirm('Hapus resep ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-outline-danger w-100">
-                            <i class="bi bi-trash"></i>
-                            Hapus Resep
-                        </button>
-                    </form>
+                            <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" onsubmit="return confirm('Hapus resep ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-trash"></i>
+                                    Hapus Resep
+                                </button>
+                            </form>
+                        @endif
+                    @endguest
                 </div>
 
-                <hr>
+                @auth
+                    <hr>
 
-                <h5 class="fw-bold mb-3">Beri Rating</h5>
-                <form action="{{ route('recipes.rate', $recipe) }}" method="POST" class="mb-4">
-                    @csrf
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <input type="radio" class="btn-check" name="rating_value" id="rating{{ $i }}" value="{{ $i }}" @checked($i === 5 && $count === 0)>
-                            <label class="btn btn-outline-warning btn-sm" for="rating{{ $i }}">{{ $i }} <i class="bi bi-star-fill"></i></label>
-                        @endfor
-                    </div>
-                    <button class="btn btn-warning w-100 fw-semibold">Kirim Rating</button>
-                </form>
+                    <h5 class="fw-bold mb-3">Beri Rating</h5>
+                    <form action="{{ route('recipes.rate', $recipe) }}" method="POST" class="mb-4">
+                        @csrf
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <input type="radio" class="btn-check" name="rating_value" id="rating{{ $i }}" value="{{ $i }}" @checked($i === 5 && $count === 0)>
+                                <label class="btn btn-outline-warning btn-sm" for="rating{{ $i }}">{{ $i }} <i class="bi bi-star-fill"></i></label>
+                            @endfor
+                        </div>
+                        <button class="btn btn-warning w-100 fw-semibold">Kirim Rating</button>
+                    </form>
 
-                <h5 class="fw-bold mb-3">Tambah ke Meal Planner</h5>
-                <form action="{{ route('meal-planner.store') }}" method="POST" class="d-grid gap-2">
-                    @csrf
-                    <input type="hidden" name="recipe_id" value="{{ $recipe->id }}">
-                    <div>
-                        <label class="form-label small">Tanggal</label>
-                        <input type="date" name="meal_date" class="form-control" required>
-                    </div>
-                    <div>
-                        <label class="form-label small">Jenis</label>
-                        <select name="meal_type" class="form-select" required>
-                            <option value="Sarapan">Sarapan</option>
-                            <option value="Makan Siang">Makan Siang</option>
-                            <option value="Makan Malam">Makan Malam</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-warning fw-semibold">Tambahkan</button>
-                </form>
+                    <h5 class="fw-bold mb-3">Tambah ke Meal Planner</h5>
+                    <form action="{{ route('meal-planner.store') }}" method="POST" class="d-grid gap-2">
+                        @csrf
+                        <input type="hidden" name="recipe_id" value="{{ $recipe->id }}">
+                        <div>
+                            <label class="form-label small">Tanggal</label>
+                            <input type="date" name="meal_date" class="form-control" required>
+                        </div>
+                        <div>
+                            <label class="form-label small">Jenis</label>
+                            <select name="meal_type" class="form-select" required>
+                                <option value="Sarapan">Sarapan</option>
+                                <option value="Makan Siang">Makan Siang</option>
+                                <option value="Makan Malam">Makan Malam</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-warning fw-semibold">Tambahkan</button>
+                    </form>
+                @endauth
 
                 <hr>
                 <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary w-100">Kembali ke Daftar</a>

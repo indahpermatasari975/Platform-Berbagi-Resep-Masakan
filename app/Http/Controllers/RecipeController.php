@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
@@ -14,6 +15,7 @@ class RecipeController extends Controller
         $q = $request->query('q');
 
         $recipes = Recipe::query()
+            ->where('status', 'approved')
             ->when($q, function ($query) use ($q) {
                 $query->where(function ($sub) use ($q) {
                     $sub->where('title', 'LIKE', "%{$q}%")
@@ -78,6 +80,9 @@ class RecipeController extends Controller
             $data['image'] = null;
         }
 
+        $data['user_id'] = Auth::id();
+        $data['status'] = Auth::user()->role === 'admin' ? 'approved' : 'pending';
+
         $recipe = Recipe::create($data);
 
         $this->syncIngredientsFromText(
@@ -88,12 +93,18 @@ class RecipeController extends Controller
         $this->syncStepsFromText($recipe, $stepsText);
 
         return redirect()
-            ->route('recipes.show', $recipe)
-            ->with('success', 'Resep berhasil ditambahkan');
+            ->route('recipes.index')
+            ->with('success', Auth::user()->role === 'admin'
+                ? 'Resep berhasil ditambahkan'
+                : 'Resep berhasil ditambahkan dan menunggu approval admin');
     }
 
     public function show(Recipe $recipe)
     {
+        if ($recipe->status !== 'approved') {
+            abort(404);
+        }
+
         $recipe->load(['ingredients', 'favorites', 'steps']);
 
         return view('recipes.detail', compact('recipe'));
@@ -101,6 +112,8 @@ class RecipeController extends Controller
 
     public function edit(Recipe $recipe)
     {
+        $this->authorizeRecipeOwnerOrAdmin($recipe);
+
         $recipe->load(['ingredients', 'steps']);
 
         return view('recipes.edit', [
@@ -113,6 +126,8 @@ class RecipeController extends Controller
 
     public function update(Request $request, Recipe $recipe)
     {
+        $this->authorizeRecipeOwnerOrAdmin($recipe);
+
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required',
@@ -160,6 +175,12 @@ class RecipeController extends Controller
         );
         $this->syncStepsFromText($recipe, $stepsText);
 
+        if ($recipe->status !== 'approved') {
+            return redirect()
+                ->route('recipes.index')
+                ->with('success', 'Resep berhasil diperbarui dan masih menunggu approval admin');
+        }
+
         return redirect()
             ->route('recipes.show', $recipe)
             ->with('success', 'Resep berhasil diperbarui');
@@ -167,6 +188,10 @@ class RecipeController extends Controller
 
     public function rate(Request $request, Recipe $recipe)
     {
+        if ($recipe->status !== 'approved') {
+            abort(404);
+        }
+
         $validated = $request->validate([
             'rating_value' => 'required|integer|min:1|max:5',
         ]);
@@ -187,6 +212,8 @@ class RecipeController extends Controller
 
     public function destroy(Recipe $recipe)
     {
+        $this->authorizeRecipeOwnerOrAdmin($recipe);
+
         $recipe->ingredients()->delete();
         $recipe->steps()->delete();
         $recipe->delete();
@@ -354,5 +381,18 @@ class RecipeController extends Controller
         return floor($number) == $number
             ? (string) (int) $number
             : rtrim(rtrim(number_format($number, 2, '.', ''), '0'), '.');
+    }
+
+    private function authorizeRecipeOwnerOrAdmin(Recipe $recipe): void
+    {
+        if (Auth::user()->role === 'admin') {
+            return;
+        }
+
+        if ((int) $recipe->user_id === (int) Auth::id()) {
+            return;
+        }
+
+        abort(403);
     }
 }

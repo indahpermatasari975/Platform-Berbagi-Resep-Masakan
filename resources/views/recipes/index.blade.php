@@ -8,10 +8,12 @@
         <h2 class="fw-bold mb-1"><i class="bi bi-journal-richtext text-warning"></i> Daftar Resep</h2>
         <p class="text-muted mb-0">Temukan resep nusantara dan internasional favoritmu.</p>
     </div>
-    <a href="{{ route('recipes.create') }}" class="btn btn-warning fw-semibold">
-        <i class="bi bi-plus-lg"></i>
-        Tambah Resep
-    </a>
+    @auth
+        <a href="{{ route('recipes.create') }}" class="btn btn-warning fw-semibold">
+            <i class="bi bi-plus-lg"></i>
+            Tambah Resep
+        </a>
+    @endauth
 </div>
 
 <div class="card border-0 shadow-sm mb-4">

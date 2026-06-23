@@ -10,26 +10,42 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold text-warning fs-3" href="{{ route('dashboard') }}">
-                <i class="bi bi-egg-fried"></i>
-                ResepKita
-            </a>
+  <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
+    <div class="container-fluid px-4">
 
+        <a class="navbar-brand fw-bold text-warning fs-3" href="{{ route('dashboard') }}">
+            <i class="bi bi-egg-fried"></i>
+            ResepKita
+        </a>
 
+        <div class="d-flex align-items-center gap-2">
 
-                <form class="d-flex flex-grow-1 mx-lg-4 my-3 my-lg-0" method="GET" action="{{ route('recipes.index') }}">
-                    <input class="form-control rounded-pill" type="search" name="q" value="{{ request('q') }}" placeholder="Cari resep, bahan, kategori...">
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-secondary fw-semibold">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Login
+                </a>
+            @else
+                <span class="fw-semibold text-muted">{{ auth()->user()->name }}</span>
+
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary fw-semibold">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </button>
                 </form>
 
                 <a href="{{ route('recipes.create') }}" class="btn btn-warning text-white fw-semibold">
                     <i class="bi bi-plus-lg"></i>
                     Tambah Resep
                 </a>
-            </div>
+            @endguest
+
         </div>
-    </nav>
+
+    </div>
+</nav>
 
     <div class="container-fluid">
         <div class="row">

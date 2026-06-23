@@ -1,34 +1,332 @@
-.sidebar-link {
-    padding: 12px 16px;
-    color: #444;
-    text-decoration: none;
-    border-radius: 12px;
-    margin-bottom: 6px;
-    transition: .3s;
-}
-
-.sidebar-link:hover .sidebar-link.active {
-    background: #fff3e8;
-    color: #ff6b00;
-    font-weight: 600;
-}
-
-.card {
-    border: none;
-    border-radius: 18px;
-}
-
-.recipe-card img {
-    height: 180px;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
-.hero-card {
-    border-radius: 24px;
-    overflow: hidden;
+:root {
+    --app-bg: #f5f7fb;
+    --app-card: #ffffff;
+    --app-text: #152033;
+    --app-muted: #667085;
+    --app-border: #e6eaf0;
+    --app-warning: #f6b400;
+    --app-warning-dark: #b87500;
 }
 
 body {
-    background: #f7f7f7;
+    margin: 0;
+    background: var(--app-bg);
+    color: var(--app-text);
+    font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.app-navbar {
+    min-height: 76px;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--app-border);
+    box-shadow: 0 4px 18px rgba(21, 32, 51, 0.06);
+    backdrop-filter: blur(10px);
+}
+
+.app-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--app-warning-dark);
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.brand-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    color: var(--app-warning);
+    border: 2px solid var(--app-warning);
+    border-radius: 12px;
+}
+
+.navbar-nav .nav-link {
+    color: #4b5565;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.75rem 0.9rem;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--app-warning-dark);
+}
+
+.app-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: min(560px, 100%);
+    padding: 0.78rem 1rem;
+    background: #ffffff;
+    border: 1px solid #d9dee8;
+    border-radius: 999px;
+}
+
+.app-search i {
+    color: var(--app-muted);
+}
+
+.app-search input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    color: var(--app-text);
+    background: transparent;
+}
+
+.app-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.78rem 1.2rem;
+    color: #ffffff;
+    border: 0;
+    border-radius: 8px;
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(246, 180, 0, 0.24);
+}
+
+.app-shell {
+    min-height: calc(100vh - 76px);
+}
+
+.app-sidebar {
+    min-height: calc(100vh - 76px);
+    background: #ffffff;
+    border-right: 1px solid var(--app-border);
+}
+
+.sidebar-inner {
+    position: sticky;
+    top: 92px;
+    padding: 1.5rem 1rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 52px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.5rem;
+    color: #1d2b45;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.sidebar-link i {
+    width: 22px;
+    font-size: 1.15rem;
+    text-align: center;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    color: var(--app-warning-dark);
+    background: #fff4d6;
+}
+
+.sidebar-link:hover {
+    transform: translateX(2px);
+}
+
+.app-main {
+    padding: 1.5rem;
+}
+
+.card,
+.form-section,
+.empty-state,
+.stat-box {
+    border: 1px solid var(--app-border) !important;
+    border-radius: 8px !important;
+    background: var(--app-card);
+    box-shadow: 0 8px 24px rgba(21, 32, 51, 0.06) !important;
+}
+
+.card {
+    overflow: hidden;
+}
+
+.hero-card {
+    background: linear-gradient(135deg, #fff8e5 0%, #ffffff 58%, #eef7ff 100%);
+}
+
+.hero-image,
+.recipe-image,
+.detail-image {
+    width: 100%;
+    object-fit: cover;
+    background: #eef2f6;
+}
+
+.hero-image {
+    aspect-ratio: 4 / 3;
+    border-radius: 8px;
+}
+
+.recipe-image {
+    aspect-ratio: 4 / 3;
+}
+
+.detail-image {
+    max-height: 440px;
+    aspect-ratio: 16 / 9;
+}
+
+.recipe-card {
+    height: 100%;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.recipe-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(21, 32, 51, 0.12) !important;
+}
+
+.recipe-title {
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.recipe-placeholder {
+    display: grid;
+    place-items: center;
+    background: #eef2f6;
+    color: #98a2b3;
+    font-size: 2rem;
+}
+
+.stat-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    padding: 1.2rem;
+}
+
+.stat-icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+    font-size: 1.35rem;
+}
+
+.form-control,
+.form-select {
+    min-height: 44px;
+    border-color: #d9dee8;
+    border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--app-warning);
+    box-shadow: 0 0 0 0.2rem rgba(246, 180, 0, 0.18);
+}
+
+textarea.form-control {
+    line-height: 1.7;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.btn-warning {
+    background: var(--app-warning);
+    border-color: var(--app-warning);
+    color: #111827;
+}
+
+.btn-warning:hover {
+    background: #e5a600;
+    border-color: #e5a600;
+    color: #111827;
+}
+
+.empty-state {
+    padding: 2rem;
+    color: var(--app-muted);
+}
+
+.rating-stars .star {
+    color: #d0d5dd;
+    font-size: 1.1rem;
+}
+
+.rating-stars .star.filled {
+    color: var(--app-warning);
+}
+
+@media (max-width: 991.98px) {
+    .app-sidebar {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--app-border);
+    }
+
+    .sidebar-inner {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .sidebar-link {
+        margin-bottom: 0;
+    }
+
+    .app-main {
+        padding: 1rem;
+    }
+
+    .app-search {
+        width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .app-brand {
+        font-size: 1.35rem;
+    }
+
+    .brand-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .sidebar-inner {
+        grid-template-columns: 1fr;
+    }
+}
+.upload-box {
+    border: 2px dashed #ddd;
+    height: 250px;
+    width: 100%;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:15px;
+    background:#fafafa;
+}
+
+.upload-box:hover{
+    border-color:#ffc107;
+}
+
+.step-row textarea,
+.ingredient-row input{
+    border-radius:10px;
 }

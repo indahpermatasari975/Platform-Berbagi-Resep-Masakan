@@ -11,7 +11,8 @@ class DashboardController extends Controller
     {
         $q = $request->query('q');
 
-        $recipesQuery = Recipe::query();
+        $recipesQuery = Recipe::query()
+            ->where('status', 'approved');
 
         // Search
         if (!empty($q)) {
@@ -44,6 +45,7 @@ class DashboardController extends Controller
 
         // Kategori Populer
         $categories = Recipe::query()
+            ->where('status', 'approved')
             ->select('category')
             ->whereNotNull('category')
             ->where('category', '!=', '')
@@ -53,19 +55,22 @@ class DashboardController extends Controller
             ->pluck('category');
 
         // Video Terbaru
-        $latestVideoRecipe = Recipe::whereNotNull('video_url')
+        $latestVideoRecipe = Recipe::where('status', 'approved')
+            ->whereNotNull('video_url')
             ->where('video_url', '!=', '')
             ->latest()
             ->first();
 
         // Statistik Dashboard
-        $totalRecipes = Recipe::count();
+        $totalRecipes = Recipe::where('status', 'approved')->count();
 
         $totalCategories = Recipe::query()
+            ->where('status', 'approved')
             ->distinct()
             ->count('category');
 
-        $totalFavorites = Recipe::withCount('favorites')
+        $totalFavorites = Recipe::where('status', 'approved')
+            ->withCount('favorites')
             ->get()
             ->sum('favorites_count');
 

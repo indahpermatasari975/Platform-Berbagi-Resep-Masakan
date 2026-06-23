@@ -4,16 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Favorite;
 use App\Models\Recipe;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class FavoriteController extends Controller
 {
     public function store(Recipe $recipe)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        if ($recipe->status !== 'approved') {
+            abort(404);
+        }
+
         Favorite::firstOrCreate([
-            'user_id' => $this->currentUserId(),
+            'user_id' => Auth::id(),
             'recipe_id' => $recipe->id,
         ]);
 
@@ -22,25 +28,18 @@ class FavoriteController extends Controller
 
     public function destroy(Recipe $recipe)
     {
-        Favorite::where('user_id', $this->currentUserId())
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        if ($recipe->status !== 'approved') {
+            abort(404);
+        }
+
+        Favorite::where('user_id', Auth::id())
             ->where('recipe_id', $recipe->id)
             ->delete();
 
         return back()->with('success', 'Resep dihapus dari favorit.');
-    }
-
-    private function currentUserId(): int
-    {
-        if (Auth::id()) {
-            return Auth::id();
-        }
-
-        return User::firstOrCreate(
-            ['email' => 'demo@resepkita.test'],
-            [
-                'name' => 'Pengguna Demo',
-                'password' => Hash::make('password'),
-            ]
-        )->id;
     }
 }
