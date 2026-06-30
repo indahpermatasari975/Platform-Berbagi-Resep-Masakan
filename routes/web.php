@@ -23,6 +23,12 @@ Route::get('/', [DashboardController::class,'index'])
 Route::get('/recipes',[RecipeController::class,'index'])
     ->name('recipes.index');
 
+Route::get('/substitutions', [
+    SubstitutionsPageController::class,
+    'index'
+])->name('substitutions.index');
+
+
 /*
 |--------------------------------------------------------------------------
 | Auth
@@ -99,10 +105,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/substitutions',
         [SubstitutionsPageController::class,'index'])
         ->name('substitutions.index');
-
 });
 
-Route::get('/recipes/{recipe}',[RecipeController::class,'show'])
+/*
+|--------------------------------------------------------------------------
+| Public Detail Recipe
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/recipes/{recipe}',
+    [RecipeController::class,'show'])
     ->name('recipes.show');
 
 /*
@@ -111,7 +123,7 @@ Route::get('/recipes/{recipe}',[RecipeController::class,'show'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('admin')->group(function () {
+Route::middleware(['auth','admin'])->group(function () {
 
     Route::get('/admin',
         [AdminRecipeController::class,'index'])
@@ -124,5 +136,14 @@ Route::middleware('admin')->group(function () {
     Route::patch('/admin/recipes/{recipe}/approve',
         [AdminRecipeController::class,'approve'])
         ->name('admin.recipes.approve');
+
+    Route::get('/substitutions/create',
+        [SubstitutionsPageController::class,'create'])
+        ->name('substitutions.create');
+
+    Route::post('/substitutions',
+        [SubstitutionsPageController::class,'store'])
+        ->name('substitutions.store');
+
 
 });
